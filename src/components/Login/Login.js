@@ -1,34 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
-import Card from '../UI/Card/Card';
-import classes from './Login.module.css';
-import Button from '../UI/Button/Button';
+import Card from "../UI/Card/Card";
+import classes from "./Login.module.css";
+import Button from "../UI/Button/Button";
 
 const Login = (props) => {
-  const [enteredEmail, setEnteredEmail] = useState('');
+  const [enteredEmail, setEnteredEmail] = useState("");
   const [emailIsValid, setEmailIsValid] = useState();
-  const [enteredPassword, setEnteredPassword] = useState('');
+  const [enteredPassword, setEnteredPassword] = useState("");
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  //useEffect should be run in RESPONSE to some other action
+  //such as a user logging on, or email verification and validation
+
+  useEffect(() => {
+
+    const identifier = setTimeout(() => {
+      console.log('Checking Form Validity')
+      setFormIsValid(
+        enteredEmail.includes("@") && enteredPassword.trim().length > 6
+      );
+    }, 1000);
+
+    // Clean-UP Function, will run before every new side effect execution and 
+    // before every component is removed, and it does not run before the first side effect execution
+    return ()=>{
+      console.log('Clean UP');
+      clearTimeout(identifier);
+    };
+  }, [enteredEmail, enteredPassword]); //We should set our dependencies the functions we use in the useEffect Hook
+
   const emailChangeHandler = (event) => {
     setEnteredEmail(event.target.value);
-
-    setFormIsValid(
-      event.target.value.includes('@') && enteredPassword.trim().length > 6
-    );
   };
 
   const passwordChangeHandler = (event) => {
     setEnteredPassword(event.target.value);
-
-    setFormIsValid(
-      event.target.value.trim().length > 6 && enteredEmail.includes('@')
-    );
   };
 
   const validateEmailHandler = () => {
-    setEmailIsValid(enteredEmail.includes('@'));
+    setEmailIsValid(enteredEmail.includes("@"));
   };
 
   const validatePasswordHandler = () => {
@@ -45,7 +57,7 @@ const Login = (props) => {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ''
+            emailIsValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="email">E-Mail</label>
@@ -59,7 +71,7 @@ const Login = (props) => {
         </div>
         <div
           className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ''
+            passwordIsValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="password">Password</label>
